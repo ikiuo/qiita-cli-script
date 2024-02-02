@@ -106,7 +106,7 @@ if __name__ == '__main__':
         parser.add_argument('--tag', metavar='TAG', nargs='+', dest='tagfilter',
                             default=[], help='特定タグを出力')
         parser.add_argument('--taglist', action='store_true',
-                            default=False, help='タグの一覧を出力')
+                            default=False, help='設定しているタグの一覧を出力')
         parser.add_argument('paths', metavar='PATH', nargs='*',
                             help='.md ファイルへのパス')
         args = parser.parse_args()

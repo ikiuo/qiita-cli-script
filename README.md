@@ -17,6 +17,8 @@ $ ./qcarticle.py --tag SSE
 ffd81d605343d2248f4c.md  94404  2021/09/04 05:33:23  ---  'x86 SSE: 逆数近似(_mm_rcp_ss : RCPSS) に使われている参照表を取り出す' (C,C++,アルゴリズム,x86,SSE)
 ```
 
+<sub>qcarticle.py は Qiita CLI ディレクトリへシンボリック リンクしています</sub>
+
 実行例の各列は
 
 1. ファイル名
