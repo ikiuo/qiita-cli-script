@@ -114,7 +114,7 @@ if __name__ == '__main__':
         files = args.paths
         if not files:
             os.chdir('public')
-            files = filter(ismdfile, os.listdir())
+            files = filter(ismdfile, filter(lambda p: p[0] != '.', os.listdir()))
         articles = list(map(QiitaArticle, files))
 
         if args.taglist:
