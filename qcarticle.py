@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import collections
+from datetime import datetime
 import functools
 import os
 import yaml  # pip: PyYAML
-from datetime import datetime
 
 QiitaArticleBriefBase = ('article', 'size', 'id', 'path', 'last', 'flags', 'org')
 QiitaArticleBrief = collections.namedtuple('QiitaArticleBrief', QiitaArticleBriefBase)
@@ -22,8 +22,8 @@ class QiitaArticle:
             self.file_lines = ifp.readlines()
 
         block_lno = []
-        for lno in range(len(self.file_lines)):
-            if self.file_lines[lno].split()[0] == '---':
+        for lno, line in enumerate(self.file_lines):
+            if line.split()[0] == '---':
                 block_lno.append(lno)
                 if len(block_lno) >= 2:
                     break
@@ -124,6 +124,7 @@ if __name__ == '__main__':
             return
 
         ltcmp = (lambda b: -1 if b else 1)
+
         def article_cmp(lhs, rhs):
             if args.sort_updated and lhs.updated_at_dt != rhs.updated_at_dt:
                 return ltcmp(str(lhs.updated_at_dt) < str(rhs.updated_at_dt))
