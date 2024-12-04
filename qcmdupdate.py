@@ -3,6 +3,7 @@
 import argparse
 import re
 import sys
+from itertools import groupby
 
 
 def noop(*_args, **_kwargs): pass
@@ -11,6 +12,50 @@ def noop(*_args, **_kwargs): pass
 RE_SHARP = re.compile(r'^(?P<mark>#+)(?P<title>.*)$')
 flag_show_position = False
 verbose = noop
+
+
+def fix_title(line):
+    m = RE_SHARP.match(line)
+    if m:
+        mark = m.group('mark')
+        title = m.group('title')
+        if title[0] != ' ':
+            line = mark + ' ' + title + '\n'
+    return line
+
+
+def fix_strong(line):
+    pos = []
+    idx = -2
+    while True:
+        idx = line.find('**', idx + 2)
+        if idx < 0:
+            break
+        pos.append(idx)
+    if not pos:
+        return line
+
+    ent = False
+    space = []
+    for idx in pos:
+        pc = line[max(0, idx - 1):idx]
+        nc = line[idx+2:idx+3]
+
+        if ent:
+            ent = not ent
+            if nc and not nc.isspace():
+                space.append(idx + 2)
+            continue
+        if not nc or nc == '\n':
+            continue
+        ent = not ent
+        if pc and not pc.isspace():
+            space.append(idx)
+
+    pline = line
+    for idx in reversed(space):
+        line = line[:idx] + ' ' + line[idx:]
+    return line
 
 
 def qcfilter(file):
@@ -23,15 +68,16 @@ def qcfilter(file):
     for lno, line in enumerate(lines):
         if line[:3] == '```':
             markdown = not markdown
-        m = RE_SHARP.match(line) if markdown else None
-        if m:
-            mark = m.group('mark')
-            title = m.group('title')
-            if title[0] != ' ':
-                if flag_show_position:
-                    print(f'{file}:{lno+1}: {line.rstrip()}')
-                line = mark + ' ' + title + '\n'
-                update = True
+        if not markdown:
+            text.append(line)
+            continue
+
+        prev = line
+        line = fix_title(line)
+        line = fix_strong(line)
+        if prev != line:
+            print(f'{file}:{lno+1}: {line.rstrip()}')
+            update = True
         text.append(line)
     return (update, ''.join(text))
 
